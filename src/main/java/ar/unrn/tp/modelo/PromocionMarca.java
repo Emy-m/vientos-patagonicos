@@ -11,11 +11,11 @@ public class PromocionMarca extends Promocion {
     }
 
     @Override
-    double devolverDescuento(Venta venta) {
+    double devolverMontoDescontado(CarroDeCompras carro) {
         double monto = 0;
 
-        if (this.fechaInicio.before(venta.getFechaVenta()) && this.fechaFin.after(venta.getFechaVenta())) {
-            for (Producto producto : venta.getProductos()) {
+        if (this.fechaInicio.before(carro.getFechaCreacion()) && this.fechaFin.after(carro.getFechaCreacion())) {
+            for (Producto producto : carro.getProductos()) {
                 if (producto.getMarca().equals(this.marcaEnDescuento)) {
                     monto += producto.getPrecio() * this.descuento;
                 }

@@ -13,5 +13,5 @@ public abstract class Promocion {
         this.descuento = descuento;
     }
 
-    abstract double devolverDescuento(Venta venta);
+    abstract double devolverMontoDescontado(CarroDeCompras carro);
 }

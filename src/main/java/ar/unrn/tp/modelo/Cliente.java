@@ -53,6 +53,18 @@ public class Cliente {
         return tarjetas;
     }
 
+    public TarjetaDeCredito getTarjeta(String unaTarjeta) {
+        TarjetaDeCredito tarjeta = null;
+
+        for (TarjetaDeCredito otraTarjeta : this.getTarjetas()) {
+            if (otraTarjeta.mismoMetodo(unaTarjeta)) {
+                tarjeta = otraTarjeta;
+            }
+        }
+
+        return tarjeta;
+    }
+
     public void setTarjetas(List<TarjetaDeCredito> tarjetas) {
         this.tarjetas = tarjetas;
     }

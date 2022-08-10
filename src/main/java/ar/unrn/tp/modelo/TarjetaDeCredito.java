@@ -1,14 +1,18 @@
 package ar.unrn.tp.modelo;
 
+import java.util.Date;
+
 public class TarjetaDeCredito {
     private String nombre;
     private int codigo;
-    private double monto;
+    private double saldo;
+    private Date fechaVencimiento;
 
-    public TarjetaDeCredito(String nombre, int codigo, double monto) {
+    public TarjetaDeCredito(String nombre, int codigo, double saldo, Date fechaVencimiento) {
         this.nombre = nombre;
         this.codigo = codigo;
-        this.monto = monto;
+        this.saldo = saldo;
+        this.fechaVencimiento = fechaVencimiento;
     }
 
     public String getNombre() {
@@ -27,12 +31,12 @@ public class TarjetaDeCredito {
         this.codigo = codigo;
     }
 
-    public double getMonto() {
-        return monto;
+    public double getSaldo() {
+        return saldo;
     }
 
-    public void setMonto(double monto) {
-        this.monto = monto;
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
     }
 
     @Override
@@ -48,5 +52,25 @@ public class TarjetaDeCredito {
     @Override
     public int hashCode() {
         return getCodigo();
+    }
+
+    public boolean tieneSuficiente(double monto) {
+        return this.getSaldo() >= monto;
+    }
+
+    public boolean estaActiva() {
+        return this.fechaVencimiento.after(new Date());
+    }
+
+    public void debitar(double monto) {
+        if (estaActiva() && tieneSuficiente(monto)) {
+            this.saldo -= monto;
+        } else {
+            throw new RuntimeException("No tiene saldo suficiente o esta inactiva");
+        }
+    }
+
+    public boolean mismoMetodo(String metodo) {
+        return this.nombre.equals(metodo);
     }
 }

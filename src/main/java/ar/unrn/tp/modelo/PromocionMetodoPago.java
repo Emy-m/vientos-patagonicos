@@ -7,15 +7,16 @@ public class PromocionMetodoPago extends Promocion {
 
     public PromocionMetodoPago(Date fechaInicio, Date fechaFin, double descuento, String nombreMetodo) {
         super(fechaInicio, fechaFin, descuento);
+        this.nombreMetodo = nombreMetodo;
     }
 
     @Override
-    public double devolverDescuento(Venta venta) {
+    public double devolverMontoDescontado(CarroDeCompras carro) {
         double monto = 0;
 
-        if (this.nombreMetodo.equals(venta.getMetodoPago())) {
-            if (this.fechaInicio.before(venta.getFechaVenta()) && this.fechaFin.after(venta.getFechaVenta())) {
-                for (Producto producto : venta.getProductos()) {
+        if (this.nombreMetodo.equals(carro.getMetodoPago())) {
+            if (this.fechaInicio.before(carro.getFechaCreacion()) && this.fechaFin.after(carro.getFechaCreacion())) {
+                for (Producto producto : carro.getProductos()) {
                     monto += producto.getPrecio();
                 }
 
