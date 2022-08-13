@@ -1,5 +1,7 @@
 package ar.unrn.tp.modelo;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,32 +28,16 @@ public class CarroDeCompras {
         return productos;
     }
 
-    public void setProductos(List<Producto> productos) {
-        this.productos = productos;
-    }
-
     public Cliente getCliente() {
         return cliente;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    public Date getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(Date fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
+    public LocalDateTime getFechaCreacion() {
+        return DateHelper.convertToLocalDateTime(fechaCreacion);
     }
 
     public List<Promocion> getPromociones() {
         return promociones;
-    }
-
-    public void setPromociones(List<Promocion> promociones) {
-        this.promociones = promociones;
     }
 
     public String getMetodoPago() {
@@ -82,11 +68,24 @@ public class CarroDeCompras {
         return total - this.calcularDescuento();
     }
 
+    public List<ProductoVenta> devolverResumen() {
+        ArrayList<ProductoVenta> detalleProds = new ArrayList<>();
+
+        for (Producto producto : productos) {
+            detalleProds.add(new ProductoVenta(producto));
+        }
+
+        return detalleProds;
+    }
+
     public Venta pagarCarrito(String metodoPago) {
         try {
-            TarjetaDeCredito tarjeta = this.getCliente().getTarjeta(metodoPago);
-            tarjeta.debitar(this.montoTotal());
-            return new Venta(this, metodoPago);
+            setMetodoPago(metodoPago);
+            ICobrable tarjeta = getCliente().getTarjeta(metodoPago);
+            tarjeta.debitar(montoTotal());
+            Venta venta = new Venta(DateHelper.nowWithTime(), cliente, metodoPago, devolverResumen(),
+                    calcularDescuento());
+            return venta;
         } catch (RuntimeException e) {
             throw e;
         }

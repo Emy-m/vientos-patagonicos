@@ -1,8 +1,12 @@
-package ar.unrn.tp.modelo;
+package ar.unrn.tp.servicios;
 
+import ar.unrn.tp.modelo.DateHelper;
+import ar.unrn.tp.modelo.ICobrable;
+
+import java.time.LocalDate;
 import java.util.Date;
 
-public class TarjetaDeCredito {
+public class TarjetaDeCredito implements ICobrable {
     private String nombre;
     private int codigo;
     private double saldo;
@@ -39,6 +43,10 @@ public class TarjetaDeCredito {
         this.saldo = saldo;
     }
 
+    public LocalDate getFechaVencimiento() {
+        return DateHelper.convertToLocalDate(fechaVencimiento);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -54,14 +62,17 @@ public class TarjetaDeCredito {
         return getCodigo();
     }
 
+    @Override
     public boolean tieneSuficiente(double monto) {
         return this.getSaldo() >= monto;
     }
 
+    @Override
     public boolean estaActiva() {
         return this.fechaVencimiento.after(new Date());
     }
 
+    @Override
     public void debitar(double monto) {
         if (estaActiva() && tieneSuficiente(monto)) {
             this.saldo -= monto;
@@ -70,6 +81,7 @@ public class TarjetaDeCredito {
         }
     }
 
+    @Override
     public boolean mismoMetodo(String metodo) {
         return this.nombre.equals(metodo);
     }

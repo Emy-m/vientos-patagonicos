@@ -14,7 +14,7 @@ public class PromocionMarca extends Promocion {
     double devolverMontoDescontado(CarroDeCompras carro) {
         double monto = 0;
 
-        if (this.fechaInicio.before(carro.getFechaCreacion()) && this.fechaFin.after(carro.getFechaCreacion())) {
+        if (fechaDentroDePromocion(carro.getFechaCreacion())) {
             for (Producto producto : carro.getProductos()) {
                 if (producto.getMarca().equals(this.marcaEnDescuento)) {
                     monto += producto.getPrecio() * this.descuento;

@@ -8,11 +8,14 @@ public class Producto {
     private double precio;
 
     public Producto(int codigo, String descripcion, String marca, String categoria, double precio) {
-        if (marca.isEmpty() || marca == null) {
+        if (marca.isEmpty()) {
             throw new RuntimeException("Se intento crear un producto sin marca");
         }
-        if (descripcion.isEmpty() || descripcion == null) {
+        if (descripcion.isEmpty()) {
             throw new RuntimeException("Se intento crear un producto sin descripcion");
+        }
+        if (categoria.isEmpty()) {
+            throw new RuntimeException("Se intento crear un producto sin categoria");
         }
         if (precio <= 0) {
             throw new RuntimeException("Se intento crear un producto con precio invalido");

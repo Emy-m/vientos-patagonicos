@@ -15,7 +15,7 @@ public class PromocionMetodoPago extends Promocion {
         double monto = 0;
 
         if (this.nombreMetodo.equals(carro.getMetodoPago())) {
-            if (this.fechaInicio.before(carro.getFechaCreacion()) && this.fechaFin.after(carro.getFechaCreacion())) {
+            if (fechaDentroDePromocion(carro.getFechaCreacion())) {
                 for (Producto producto : carro.getProductos()) {
                     monto += producto.getPrecio();
                 }
