@@ -1,37 +1,38 @@
 package ar.unrn.tp.servicios;
 
 import ar.unrn.tp.modelo.DateHelper;
-import ar.unrn.tp.modelo.ICobrable;
+import ar.unrn.tp.modelo.AbstractCobrable;
 
 import java.time.LocalDate;
 import java.util.Date;
 
-public class TarjetaDeCredito implements ICobrable {
-    private String nombre;
-    private int codigo;
-    private double saldo;
+public class TarjetaDeCredito extends AbstractCobrable {
+    private String metodo;
+    private String codigo;
+    private float saldo;
     private Date fechaVencimiento;
 
-    public TarjetaDeCredito(String nombre, int codigo, double saldo, Date fechaVencimiento) {
-        this.nombre = nombre;
+    public TarjetaDeCredito(String metodo, String codigo, float saldo, Date fechaVencimiento) {
+        super();
+        this.metodo = metodo;
         this.codigo = codigo;
         this.saldo = saldo;
         this.fechaVencimiento = fechaVencimiento;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getMetodo() {
+        return metodo;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setMetodo(String metodo) {
+        this.metodo = metodo;
     }
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 
@@ -39,27 +40,12 @@ public class TarjetaDeCredito implements ICobrable {
         return saldo;
     }
 
-    public void setSaldo(double saldo) {
+    public void setSaldo(float saldo) {
         this.saldo = saldo;
     }
 
     public LocalDate getFechaVencimiento() {
         return DateHelper.convertToLocalDate(fechaVencimiento);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TarjetaDeCredito that = (TarjetaDeCredito) o;
-
-        return getCodigo() == that.getCodigo();
-    }
-
-    @Override
-    public int hashCode() {
-        return getCodigo();
     }
 
     @Override
@@ -83,6 +69,21 @@ public class TarjetaDeCredito implements ICobrable {
 
     @Override
     public boolean mismoMetodo(String metodo) {
-        return this.nombre.equals(metodo);
+        return this.metodo.equals(metodo);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TarjetaDeCredito that = (TarjetaDeCredito) o;
+
+        return getCodigo().equals(that.getCodigo());
+    }
+
+    @Override
+    public int hashCode() {
+        return getCodigo().hashCode();
     }
 }

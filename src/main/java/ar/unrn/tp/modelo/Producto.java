@@ -1,20 +1,23 @@
 package ar.unrn.tp.modelo;
 
 public class Producto {
-    private int codigo;
+    private String codigo;
     private String descripcion;
     private String marca;
-    private String categoria;
+    private Categoria categoria;
     private double precio;
 
-    public Producto(int codigo, String descripcion, String marca, String categoria, double precio) {
+    public Producto(String codigo, String descripcion, String marca, Categoria categoria, double precio) {
+        if (codigo.isEmpty()) {
+            throw new RuntimeException("Se intento crear un producto sin codigo");
+        }
         if (marca.isEmpty()) {
             throw new RuntimeException("Se intento crear un producto sin marca");
         }
         if (descripcion.isEmpty()) {
             throw new RuntimeException("Se intento crear un producto sin descripcion");
         }
-        if (categoria.isEmpty()) {
+        if (categoria == null) {
             throw new RuntimeException("Se intento crear un producto sin categoria");
         }
         if (precio <= 0) {
@@ -28,11 +31,11 @@ public class Producto {
         this.precio = precio;
     }
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 
@@ -52,11 +55,11 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
-    public String getCategoria() {
+    public Categoria getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
+    public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
 
@@ -75,11 +78,11 @@ public class Producto {
 
         Producto producto = (Producto) o;
 
-        return getCodigo() == producto.getCodigo();
+        return getCodigo().equals(producto.getCodigo());
     }
 
     @Override
     public int hashCode() {
-        return getCodigo();
+        return getCodigo().hashCode();
     }
 }

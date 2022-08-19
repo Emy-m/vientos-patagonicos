@@ -81,7 +81,7 @@ public class CarroDeCompras {
     public Venta pagarCarrito(String metodoPago) {
         try {
             setMetodoPago(metodoPago);
-            ICobrable tarjeta = getCliente().getTarjeta(metodoPago);
+            AbstractCobrable tarjeta = getCliente().getTarjeta(metodoPago);
             tarjeta.debitar(montoTotal());
             Venta venta = new Venta(DateHelper.nowWithTime(), cliente, metodoPago, devolverResumen(),
                     calcularDescuento());

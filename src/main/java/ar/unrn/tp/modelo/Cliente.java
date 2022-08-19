@@ -2,16 +2,29 @@ package ar.unrn.tp.modelo;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
+import javax.jdo.annotations.Unique;
+import javax.persistence.*;
 import java.util.List;
 
+@Entity
 public class Cliente {
+    @Id
+    @GeneratedValue
+    private Long idCliente;
     private String nombre;
     private String apellido;
+
+    @Unique
     private String DNI;
     private String email;
-    private List<ICobrable> tarjetas;
 
-    public Cliente(String nombre, String apellido, String DNI, String email, List<ICobrable> tarjetas) {
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<AbstractCobrable> tarjetas;
+
+    protected Cliente() {
+    }
+
+    public Cliente(String nombre, String apellido, String DNI, String email) {
         if (nombre.isEmpty()) {
             throw new RuntimeException("Se intento crear un cliente sin nombre");
         }
@@ -29,6 +42,10 @@ public class Cliente {
         this.apellido = apellido;
         this.DNI = DNI;
         this.email = email;
+    }
+
+    public Cliente(String nombre, String apellido, String DNI, String email, List<AbstractCobrable> tarjetas) {
+        this(nombre, apellido, DNI, email);
         this.tarjetas = tarjetas;
     }
 
@@ -36,6 +53,10 @@ public class Cliente {
     private boolean validateEmail(String email) {
         EmailValidator validator = EmailValidator.getInstance();
         return validator.isValid(email);
+    }
+
+    public Long getIdCliente() {
+        return idCliente;
     }
 
     public String getNombre() {
@@ -70,14 +91,14 @@ public class Cliente {
         this.email = email;
     }
 
-    public List<ICobrable> getTarjetas() {
+    public List<AbstractCobrable> getTarjetas() {
         return tarjetas;
     }
 
-    public ICobrable getTarjeta(String unaTarjeta) {
-        ICobrable tarjeta = null;
+    public AbstractCobrable getTarjeta(String unaTarjeta) {
+        AbstractCobrable tarjeta = null;
 
-        for (ICobrable otraTarjeta : this.getTarjetas()) {
+        for (AbstractCobrable otraTarjeta : this.getTarjetas()) {
             if (otraTarjeta.mismoMetodo(unaTarjeta)) {
                 tarjeta = otraTarjeta;
             }
@@ -86,8 +107,12 @@ public class Cliente {
         return tarjeta;
     }
 
-    public void setTarjetas(List<ICobrable> tarjetas) {
+    public void setTarjetas(List<AbstractCobrable> tarjetas) {
         this.tarjetas = tarjetas;
+    }
+
+    public void agregarTarjeta(AbstractCobrable tarjeta) {
+        this.tarjetas.add(tarjeta);
     }
 
     @Override
@@ -103,5 +128,16 @@ public class Cliente {
     @Override
     public int hashCode() {
         return getDNI() != null ? getDNI().hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Cliente{" +
+                "idCliente=" + idCliente +
+                ", nombre='" + nombre + '\'' +
+                ", apellido='" + apellido + '\'' +
+                ", DNI='" + DNI + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }
