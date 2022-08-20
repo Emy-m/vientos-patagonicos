@@ -1,51 +1,16 @@
 package ar.unrn.tp.servicios;
 
-import ar.unrn.tp.modelo.DateHelper;
 import ar.unrn.tp.modelo.AbstractCobrable;
 
-import java.time.LocalDate;
+import javax.persistence.Entity;
 import java.util.Date;
 
+@Entity
 public class TarjetaDeCredito extends AbstractCobrable {
-    private String metodo;
-    private String codigo;
-    private float saldo;
-    private Date fechaVencimiento;
+    public TarjetaDeCredito() {}
 
     public TarjetaDeCredito(String metodo, String codigo, float saldo, Date fechaVencimiento) {
-        super();
-        this.metodo = metodo;
-        this.codigo = codigo;
-        this.saldo = saldo;
-        this.fechaVencimiento = fechaVencimiento;
-    }
-
-    public String getMetodo() {
-        return metodo;
-    }
-
-    public void setMetodo(String metodo) {
-        this.metodo = metodo;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
-    public double getSaldo() {
-        return saldo;
-    }
-
-    public void setSaldo(float saldo) {
-        this.saldo = saldo;
-    }
-
-    public LocalDate getFechaVencimiento() {
-        return DateHelper.convertToLocalDate(fechaVencimiento);
+        super(metodo, codigo, saldo, fechaVencimiento);
     }
 
     @Override

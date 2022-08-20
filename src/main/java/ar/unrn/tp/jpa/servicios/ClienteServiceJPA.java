@@ -2,6 +2,7 @@ package ar.unrn.tp.jpa.servicios;
 
 
 import ar.unrn.tp.api.ClienteService;
+import ar.unrn.tp.modelo.AbstractCobrable;
 import ar.unrn.tp.modelo.Cliente;
 import ar.unrn.tp.modelo.DateHelper;
 import ar.unrn.tp.servicios.TarjetaDeCredito;
@@ -14,14 +15,14 @@ public class ClienteServiceJPA implements ClienteService {
 
     @Override
     public void crearCliente(String nombre, String apellido, String dni, String email) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-objectdb");
+        EntityManagerFactory emf = JPAHelper.getJPAFactory();
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
 
             //hacer algo con em
-            Cliente p = new Cliente(nombre, apellido, dni, email);
+            Cliente p = new Cliente(nombre, apellido, dni, email, null);
             em.persist(p);
 
             tx.commit();
@@ -36,7 +37,7 @@ public class ClienteServiceJPA implements ClienteService {
 
     @Override
     public void modificarCliente(Long idCliente, String nombre, String apellido, String dni, String email) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-objectdb");
+        EntityManagerFactory emf = JPAHelper.getJPAFactory();
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -61,7 +62,7 @@ public class ClienteServiceJPA implements ClienteService {
 
     @Override
     public void agregarTarjeta(Long idCliente, String nro, String marca, float saldo, LocalDate fechaVencimiento) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-objectdb");
+        EntityManagerFactory emf = JPAHelper.getJPAFactory();
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -69,12 +70,17 @@ public class ClienteServiceJPA implements ClienteService {
 
             //hacer algo con em
             Cliente cliente = em.getReference(Cliente.class, idCliente);
-            TarjetaDeCredito tarjetaDeCredito = new TarjetaDeCredito(marca, nro, saldo, DateHelper.convertToDate(fechaVencimiento));
-            cliente.agregarTarjeta(tarjetaDeCredito);
+
+            if (cliente != null) {
+                TarjetaDeCredito tarjetaDeCredito = new TarjetaDeCredito(marca, nro, saldo, DateHelper.convertToDate(fechaVencimiento));
+                cliente.agregarTarjeta(tarjetaDeCredito);
+            }
 
             tx.commit();
         } catch (Exception e) {
-            tx.rollback();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             throw new RuntimeException(e);
         } finally {
             if (em != null && em.isOpen())
@@ -84,6 +90,17 @@ public class ClienteServiceJPA implements ClienteService {
 
     @Override
     public List listarTarjetas(Long idCliente) {
-        return null;
+        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManager em = emf.createEntityManager();
+        try {
+            //hacer algo con em
+            Cliente cliente = em.find(Cliente.class, idCliente);
+            return cliente.getTarjetas();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (em != null && em.isOpen())
+                em.close();
+        }
     }
 }

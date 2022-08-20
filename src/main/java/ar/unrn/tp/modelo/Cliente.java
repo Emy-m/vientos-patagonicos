@@ -1,9 +1,11 @@
 package ar.unrn.tp.modelo;
 
+import com.sun.istack.internal.NotNull;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import javax.jdo.annotations.Unique;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,12 +21,12 @@ public class Cliente {
     private String email;
 
     @OneToMany(cascade = CascadeType.PERSIST)
-    private List<AbstractCobrable> tarjetas;
+    private List<AbstractCobrable> tarjetas = new ArrayList<>();
 
     protected Cliente() {
     }
 
-    public Cliente(String nombre, String apellido, String DNI, String email) {
+    public Cliente(String nombre, String apellido, String DNI, String email, List<AbstractCobrable> tarjetas) {
         if (nombre.isEmpty()) {
             throw new RuntimeException("Se intento crear un cliente sin nombre");
         }
@@ -42,10 +44,6 @@ public class Cliente {
         this.apellido = apellido;
         this.DNI = DNI;
         this.email = email;
-    }
-
-    public Cliente(String nombre, String apellido, String DNI, String email, List<AbstractCobrable> tarjetas) {
-        this(nombre, apellido, DNI, email);
         this.tarjetas = tarjetas;
     }
 
@@ -57,6 +55,10 @@ public class Cliente {
 
     public Long getIdCliente() {
         return idCliente;
+    }
+
+    public void setIdCliente(Long idCliente) {
+        this.idCliente = idCliente;
     }
 
     public String getNombre() {
@@ -112,7 +114,14 @@ public class Cliente {
     }
 
     public void agregarTarjeta(AbstractCobrable tarjeta) {
-        this.tarjetas.add(tarjeta);
+        if (this.tarjetas == null) {
+            ArrayList<AbstractCobrable> tarjetas = new ArrayList<>();
+            tarjetas.add(tarjeta);
+            this.tarjetas = tarjetas;
+        }
+        else {
+            this.tarjetas.add(tarjeta);
+        }
     }
 
     @Override
@@ -138,6 +147,7 @@ public class Cliente {
                 ", apellido='" + apellido + '\'' +
                 ", DNI='" + DNI + '\'' +
                 ", email='" + email + '\'' +
+                ", tarjetas=" + tarjetas +
                 '}';
     }
 }
