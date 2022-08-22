@@ -11,6 +11,13 @@ public class CarroDeCompras {
     private List<Promocion> promociones;
     private String metodoPago;
 
+    public CarroDeCompras(List<Producto> productos, List<Promocion> promos, String metodoPago, Date fechaCreacion) {
+        this.productos = productos;
+        this.promociones = promos;
+        this.metodoPago = metodoPago;
+        this.fechaCreacion = fechaCreacion;
+    }
+
     public CarroDeCompras(List<Producto> productos, Cliente cliente, Date fechaCreacion, List<Promocion> promos) {
         this.productos = productos;
         this.cliente = cliente;
@@ -67,14 +74,26 @@ public class CarroDeCompras {
         return total - this.calcularDescuento();
     }
 
-    public Venta pagarCarrito(String metodoPago) {
+    public Venta pagarCarrito() {
         try {
-            setMetodoPago(metodoPago);
+            if (this.metodoPago.isEmpty()) {
+                throw new RuntimeException("Se intento pagar el carrito sin metodo de pago");
+            }
+
             AbstractCobrable tarjeta = getCliente().getTarjeta(metodoPago);
             tarjeta.debitar(montoTotal());
             Venta venta = new Venta(DateHelper.nowWithTime(), cliente, metodoPago, productos,
                     montoTotal());
             return venta;
+        } catch (RuntimeException e) {
+            throw e;
+        }
+    }
+
+    public Venta pagarCarrito(String metodoPago) {
+        try {
+            setMetodoPago(metodoPago);
+            return this.pagarCarrito();
         } catch (RuntimeException e) {
             throw e;
         }

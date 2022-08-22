@@ -109,14 +109,14 @@ public class Cliente {
         return tarjeta;
     }
 
-    public boolean tieneTarjeta(AbstractCobrable tarjeta) {
+    public AbstractCobrable getTarjeta(Long idTarjeta) {
         for (AbstractCobrable tarjetaCliente : tarjetas) {
-            if (tarjetaCliente.equals(tarjeta)) {
-                return true;
+            if (tarjetaCliente.getIdCobrable().equals(idTarjeta)) {
+                return tarjetaCliente;
             }
         }
 
-        return false;
+        throw new RuntimeException("El cliente no posee la tarjeta");
     }
 
     public void setTarjetas(List<AbstractCobrable> tarjetas) {

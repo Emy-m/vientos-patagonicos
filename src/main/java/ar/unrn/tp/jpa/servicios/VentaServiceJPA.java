@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.List;
 
 public class VentaServiceJPA implements VentaService {
@@ -18,23 +17,22 @@ public class VentaServiceJPA implements VentaService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-
             //hacer algo con em
             Cliente cliente = em.find(Cliente.class, idCliente);
-            AbstractCobrable tarjeta = em.find(AbstractCobrable.class, idTarjeta);
-
-            if (!cliente.tieneTarjeta(tarjeta)) {
-                throw new RuntimeException("Servicio Venta - realizarVenta: La Tarjeta no es del cliente");
-            }
+            AbstractCobrable tarjeta = cliente.getTarjeta(idTarjeta);
 
             // Se guarda la venta con este listado de productos
-            TypedQuery<Producto> productosReales = em.createQuery("select prod from Producto prod", Producto.class);
+            TypedQuery<Producto> productosReales = em.createQuery("select prod from Producto prod where prod.idProducto in :idProdsList", Producto.class);
+            productosReales.setParameter("idProdsList", productos);
             List<Producto> prods = productosReales.getResultList();
 
-            // El monto total se calcula ahora, puede diferir del listado anterior..
-            float monto = calcularMonto(productos, idTarjeta);
+            TypedQuery<Promocion> promos = em.createQuery("select promo from Promocion promo where " +
+                    ":now between promo.fechaInicio and promo.fechaFin", Promocion.class);
+            promos.setParameter("now", DateHelper.nowWithTime());
+            List<Promocion> promocionList = promos.getResultList();
 
-            Venta venta = new Venta(DateHelper.nowWithTime(), cliente, tarjeta.getMetodo(), prods, monto);
+            CarroDeCompras carro = new CarroDeCompras(prods, cliente, DateHelper.nowWithTime(), promocionList, tarjeta.getMetodo());
+            Venta venta = carro.pagarCarrito();
             em.persist(venta);
 
             tx.commit();
@@ -55,30 +53,22 @@ public class VentaServiceJPA implements VentaService {
         EntityManager em = emf.createEntityManager();
         try {
             //hacer algo con em
-            float monto = 0;
-            float descuento = 0;
-
             AbstractCobrable tarjeta = em.find(AbstractCobrable.class, idTarjeta);
             if (productos == null || productos.size() == 0) {
                 throw new RuntimeException("Servicio Venta - calcularMonto: No hay productos");
             }
 
-            TypedQuery<Promocion> promos = em.createQuery("select promo from Promocion promo", Promocion.class);
+            TypedQuery<Promocion> promos = em.createQuery("select promo from Promocion promo where " +
+                    ":now between promo.fechaInicio and promo.fechaFin", Promocion.class);
+            promos.setParameter("now", DateHelper.nowWithTime());
             List<Promocion> promocionList = promos.getResultList();
-            List<Producto> productoList = new ArrayList<>();
 
-            Producto prod = null;
-            for (Long idProducto : productos) {
-                prod = em.find(Producto.class, idProducto);
-                productoList.add(prod);
-                monto += prod.getPrecio();
-            }
+            TypedQuery<Producto> prods = em.createQuery("select prod from Producto prod where prod.idProducto in :idProdsList", Producto.class);
+            prods.setParameter("idProdsList", prods);
+            List<Producto> productoList = prods.getResultList();
 
-            for (Promocion promo : promocionList) {
-                descuento += promo.devolverMontoDescontado(productoList, tarjeta.getMetodo());
-            }
-
-            return monto - descuento;
+            CarroDeCompras carro = new CarroDeCompras(productoList, promocionList, tarjeta.getMetodo(), DateHelper.nowWithTime());
+            return (float) carro.montoTotal();
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
