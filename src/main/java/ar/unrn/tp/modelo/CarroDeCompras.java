@@ -1,7 +1,6 @@
 package ar.unrn.tp.modelo;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +51,7 @@ public class CarroDeCompras {
         double descuento = 0;
 
         for (Promocion promo : this.getPromociones()) {
-            descuento += promo.devolverMontoDescontado(this);
+            descuento += promo.devolverMontoDescontado(productos, metodoPago);
         }
 
         return descuento;
@@ -68,23 +67,13 @@ public class CarroDeCompras {
         return total - this.calcularDescuento();
     }
 
-    public List<ProductoVenta> devolverResumen() {
-        ArrayList<ProductoVenta> detalleProds = new ArrayList<>();
-
-        for (Producto producto : productos) {
-            detalleProds.add(new ProductoVenta(producto));
-        }
-
-        return detalleProds;
-    }
-
     public Venta pagarCarrito(String metodoPago) {
         try {
             setMetodoPago(metodoPago);
             AbstractCobrable tarjeta = getCliente().getTarjeta(metodoPago);
             tarjeta.debitar(montoTotal());
-            Venta venta = new Venta(DateHelper.nowWithTime(), cliente, metodoPago, devolverResumen(),
-                    calcularDescuento());
+            Venta venta = new Venta(DateHelper.nowWithTime(), cliente, metodoPago, productos,
+                    montoTotal());
             return venta;
         } catch (RuntimeException e) {
             throw e;

@@ -178,13 +178,13 @@ public class Tests {
          * * La tarjeta "MemeCard" del cliente esta activa y tiene suficiente para pagar
          */
 
-        assertEquals(500, carro.pagarCarrito("MemeCard").montoTotal());
+        assertEquals(500, carro.pagarCarrito("MemeCard").getMontoTotal());
 
         Date inicio = DateHelper.nowWithTime();
         Promocion promoMarcaComarca = new PromocionMarca(inicio, fin, 0.5, "Comarca");
         promos.add(promoMarcaComarca);
 
-        assertEquals(350, carro.pagarCarrito("MemeCard").montoTotal());
+        assertEquals(350, carro.pagarCarrito("MemeCard").getMontoTotal());
     }
 
     @Test

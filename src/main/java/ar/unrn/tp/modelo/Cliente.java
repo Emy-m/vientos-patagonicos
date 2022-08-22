@@ -1,6 +1,5 @@
 package ar.unrn.tp.modelo;
 
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import javax.jdo.annotations.Unique;
@@ -18,9 +17,10 @@ public class Cliente {
 
     @Unique
     private String DNI;
+
     private String email;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<AbstractCobrable> tarjetas = new ArrayList<>();
 
     protected Cliente() {
@@ -107,6 +107,16 @@ public class Cliente {
         }
 
         return tarjeta;
+    }
+
+    public boolean tieneTarjeta(AbstractCobrable tarjeta) {
+        for (AbstractCobrable tarjetaCliente : tarjetas) {
+            if (tarjetaCliente.equals(tarjeta)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void setTarjetas(List<AbstractCobrable> tarjetas) {

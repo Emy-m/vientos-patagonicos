@@ -1,9 +1,15 @@
 package ar.unrn.tp.modelo;
 
+import javax.persistence.Entity;
 import java.util.Date;
+import java.util.List;
 
+@Entity
 public class PromocionMarca extends Promocion {
     private String marcaEnDescuento;
+
+    protected PromocionMarca() {
+    }
 
     public PromocionMarca(Date fechaInicio, Date fechaFin, double descuento, String marcaEnDescuento) {
         super(fechaInicio, fechaFin, descuento);
@@ -11,11 +17,11 @@ public class PromocionMarca extends Promocion {
     }
 
     @Override
-    double devolverMontoDescontado(CarroDeCompras carro) {
+    public double devolverMontoDescontado(List<Producto> productos, String metodoPago) {
         double monto = 0;
 
-        if (fechaDentroDePromocion(carro.getFechaCreacion())) {
-            for (Producto producto : carro.getProductos()) {
+        if (fechaDentroDePromocion()) {
+            for (Producto producto : productos) {
                 if (producto.getMarca().equals(this.marcaEnDescuento)) {
                     monto += producto.getPrecio() * this.descuento;
                 }
@@ -23,5 +29,12 @@ public class PromocionMarca extends Promocion {
         }
 
         return monto;
+    }
+
+    @Override
+    public String toString() {
+        return "PromocionMarca{" +
+                "marcaEnDescuento='" + marcaEnDescuento + '\'' +
+                "} " + super.toString();
     }
 }

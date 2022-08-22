@@ -2,7 +2,7 @@ package ar.unrn.tp.api;
 
 import java.util.List;
 
-interface ProductoService {
+public interface ProductoService {
     //validar que sea una categoría existente y que codigo no se repita
     void crearProducto(String codigo, String descripcion, String marca, float precio, Long IdCategoría);
 

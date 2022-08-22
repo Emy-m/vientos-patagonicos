@@ -2,7 +2,7 @@ package ar.unrn.tp.api;
 
 import java.time.LocalDate;
 
-interface DescuentoService {
+public interface DescuentoService {
     // validar que las fechas no se superpongan
     void crearDescuentoSobreTotal(String marcaTarjeta, LocalDate fechaDesde, LocalDate fechaHasta, float porcentaje);
 

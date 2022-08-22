@@ -2,7 +2,7 @@ package ar.unrn.tp.api;
 
 import java.util.List;
 
-interface VentaService {
+public interface VentaService {
     //Crea una venta. El monto se calcula aplicando los descuentos a la fecha
     // validaciones:
     // - debe ser un cliente existente

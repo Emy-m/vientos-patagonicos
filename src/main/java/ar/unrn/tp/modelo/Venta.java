@@ -1,44 +1,106 @@
 package ar.unrn.tp.modelo;
 
-import java.time.LocalDateTime;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Entity
 public class Venta {
-    private Date fechaVenta;
-    private Cliente cliente;
-    private String metodoDePago;
-    private List<ProductoVenta> detalleProductos;
-    private double descuento;
+    @Id
+    @GeneratedValue
+    private Long idVenta;
 
-    public Venta(Date fechaVenta, Cliente cliente, String metodoDePago, List<ProductoVenta> detalleProductos,
-                 double descuento) {
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Cliente cliente;
+
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private List<ProductoVenta> detalleProductos;
+
+    private Date fechaVenta;
+    private String metodoDePago;
+    private double montoTotal;
+
+    protected Venta() {
+    }
+
+    // Poner la tarjeta directamente?
+    public Venta(Date fechaVenta, Cliente cliente, String metodoDePago, List<Producto> productos,
+                 double montoTotal) {
         this.fechaVenta = fechaVenta;
         this.cliente = cliente;
         this.metodoDePago = metodoDePago;
-        this.detalleProductos = detalleProductos;
-        this.descuento = descuento;
+        this.detalleProductos = devolverResumen(productos);
+        this.montoTotal = montoTotal;
     }
 
-    public double montoTotal() {
-        double total = 0;
+    private List<ProductoVenta> devolverResumen(List<Producto> productos) {
+        ArrayList<ProductoVenta> detalleProds = new ArrayList<>();
 
-        for (ProductoVenta producto : detalleProductos) {
-            total += producto.getPrecio();
+        for (Producto producto : productos) {
+            detalleProds.add(new ProductoVenta(producto.getCodigo(), producto.getPrecio()));
         }
 
-        return total - descuento;
+        return detalleProds;
+    }
+
+    public Long getIdVenta() {
+        return idVenta;
+    }
+
+    public void setIdVenta(Long idVenta) {
+        this.idVenta = idVenta;
+    }
+
+    public Date getFechaVenta() {
+        return fechaVenta;
+    }
+
+    public void setFechaVenta(Date fechaVenta) {
+        this.fechaVenta = fechaVenta;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     public String getMetodoDePago() {
         return metodoDePago;
     }
 
-    public LocalDateTime getFechaVenta() {
-        return DateHelper.convertToLocalDateTime(fechaVenta);
+    public void setMetodoDePago(String metodoDePago) {
+        this.metodoDePago = metodoDePago;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public List<ProductoVenta> getDetalleProductos() {
+        return detalleProductos;
+    }
+
+    public void setDetalleProductos(List<ProductoVenta> detalleProductos) {
+        this.detalleProductos = detalleProductos;
+    }
+
+    public double getMontoTotal() {
+        return montoTotal;
+    }
+
+    public void setMontoTotal(double montoTotal) {
+        this.montoTotal = montoTotal;
+    }
+
+    @Override
+    public String toString() {
+        return "Venta{" +
+                "idVenta=" + idVenta +
+                ", cliente=" + cliente +
+                ", detalleProductos=" + detalleProductos +
+                ", fechaVenta=" + fechaVenta +
+                ", metodoDePago='" + metodoDePago + '\'' +
+                ", montoTotal=" + montoTotal +
+                '}';
     }
 }

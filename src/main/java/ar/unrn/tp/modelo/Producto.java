@@ -1,11 +1,26 @@
 package ar.unrn.tp.modelo;
 
+import javax.jdo.annotations.Unique;
+import javax.persistence.*;
+
+@Entity
 public class Producto {
+    @Id
+    @GeneratedValue
+    private Long idProducto;
+
+    @Unique
     private String codigo;
+
     private String descripcion;
     private String marca;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     private Categoria categoria;
+
     private double precio;
+
+    protected Producto() {}
 
     public Producto(String codigo, String descripcion, String marca, Categoria categoria, double precio) {
         if (codigo.isEmpty()) {
@@ -29,6 +44,14 @@ public class Producto {
         this.marca = marca;
         this.categoria = categoria;
         this.precio = precio;
+    }
+
+    public Long getIdProducto() {
+        return idProducto;
+    }
+
+    public void setIdProducto(Long idProducto) {
+        this.idProducto = idProducto;
     }
 
     public String getCodigo() {
@@ -84,5 +107,17 @@ public class Producto {
     @Override
     public int hashCode() {
         return getCodigo().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Producto{" +
+                "idProducto=" + idProducto +
+                ", codigo='" + codigo + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                ", marca='" + marca + '\'' +
+                ", categoria=" + categoria +
+                ", precio=" + precio +
+                '}';
     }
 }

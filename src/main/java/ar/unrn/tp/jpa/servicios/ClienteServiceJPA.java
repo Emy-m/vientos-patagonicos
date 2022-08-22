@@ -2,7 +2,6 @@ package ar.unrn.tp.jpa.servicios;
 
 
 import ar.unrn.tp.api.ClienteService;
-import ar.unrn.tp.modelo.AbstractCobrable;
 import ar.unrn.tp.modelo.Cliente;
 import ar.unrn.tp.modelo.DateHelper;
 import ar.unrn.tp.servicios.TarjetaDeCredito;
@@ -27,7 +26,9 @@ public class ClienteServiceJPA implements ClienteService {
 
             tx.commit();
         } catch (Exception e) {
-            tx.rollback();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             throw new RuntimeException(e);
         } finally {
             if (em != null && em.isOpen())
@@ -52,7 +53,9 @@ public class ClienteServiceJPA implements ClienteService {
 
             tx.commit();
         } catch (Exception e) {
-            tx.rollback();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             throw new RuntimeException(e);
         } finally {
             if (em != null && em.isOpen())

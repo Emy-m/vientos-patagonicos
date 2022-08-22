@@ -26,10 +26,10 @@ public class DateHelper {
         return Date.from(dateToConvert.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    public static boolean isDateBetween(Date from, Date to, LocalDateTime when) {
+    public static boolean isDateBetween(Date from, Date to, LocalDate when) {
         boolean result = true;
-        LocalDateTime start = DateHelper.convertToLocalDateTime(from);
-        LocalDateTime end = DateHelper.convertToLocalDateTime(to);
+        LocalDate start = DateHelper.convertToLocalDate(from);
+        LocalDate end = DateHelper.convertToLocalDate(to);
 
         if (!when.isEqual(start) && when.isBefore(start)) {
             result = false;

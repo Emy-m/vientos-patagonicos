@@ -76,6 +76,21 @@ public abstract class AbstractCobrable {
     public abstract boolean mismoMetodo(String metodo);
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AbstractCobrable that = (AbstractCobrable) o;
+
+        return getCodigo().equals(that.getCodigo());
+    }
+
+    @Override
+    public int hashCode() {
+        return getCodigo().hashCode();
+    }
+
+    @Override
     public String toString() {
         return "AbstractCobrable{" +
                 "idCobrable=" + idCobrable +
