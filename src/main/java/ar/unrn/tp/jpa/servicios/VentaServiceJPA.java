@@ -31,7 +31,8 @@ public class VentaServiceJPA implements VentaService {
             promos.setParameter("now", DateHelper.nowWithTime());
             List<Promocion> promocionList = promos.getResultList();
 
-            CarroDeCompras carro = new CarroDeCompras(prods, cliente, DateHelper.nowWithTime(), promocionList, tarjeta.getMetodo());
+            CarroDeCompras carro = new CarroDeCompras(prods, cliente, DateHelper.nowWithTime(), promocionList,
+                    tarjeta.getMetodo());
             Venta venta = carro.pagarCarrito();
             em.persist(venta);
 
