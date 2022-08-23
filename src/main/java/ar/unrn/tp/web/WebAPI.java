@@ -30,8 +30,8 @@ public class WebAPI {
         Javalin app = Javalin.create(config -> {
             config.enableCorsForAllOrigins();
         }).start(this.webPort);
-        /*app.post("/clientes", crearCliente());
-        app.put("/clientes", modificarCliente());*/
+        app.post("/clientes", crearCliente());
+        app.put("/clientes/{id}", modificarCliente());
         app.post("/clientes/tarjetas/{id}", agregarTarjeta());
         app.get("/clientes/tarjetas/{id}", obtenerTarjetas());
 
@@ -47,11 +47,20 @@ public class WebAPI {
     }
 
     private Handler crearCliente() {
-        return null;
+        return ctx -> {
+            ClienteDTO dto = ctx.bodyAsClass(ClienteDTO.class);
+            this.clientes.crearCliente(dto.getNombre(), dto.getApellido(), dto.getDni(), dto.getEmail());
+            ctx.json(Map.of("result", "success"));
+        };
     }
 
     private Handler modificarCliente() {
-        return null;
+        return ctx -> {
+            ClienteDTO dto = ctx.bodyAsClass(ClienteDTO.class);
+            Long id = Long.valueOf(ctx.pathParam("id"));
+            this.clientes.modificarCliente(id, dto.getNombre(), dto.getApellido(), dto.getDni(), dto.getEmail());
+            ctx.json(Map.of("result", "success"));
+        };
     }
 
     private Handler agregarTarjeta() {
