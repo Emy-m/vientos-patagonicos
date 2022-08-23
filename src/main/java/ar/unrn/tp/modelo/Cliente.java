@@ -6,6 +6,7 @@ import javax.jdo.annotations.Unique;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public class Cliente {
@@ -142,6 +143,10 @@ public class Cliente {
         Cliente cliente = (Cliente) o;
 
         return getDNI() != null ? getDNI().equals(cliente.getDNI()) : cliente.getDNI() == null;
+    }
+
+    public Map<String, Object> toMap() {
+        return Map.of("id", idCliente, "nombre", nombre, "apellido", apellido, "dni", DNI, "email", email);
     }
 
     @Override

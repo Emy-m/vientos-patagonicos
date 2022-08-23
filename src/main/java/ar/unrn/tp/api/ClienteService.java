@@ -1,5 +1,7 @@
 package ar.unrn.tp.api;
 
+import ar.unrn.tp.modelo.AbstractCobrable;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,5 +16,5 @@ public interface ClienteService {
     void agregarTarjeta(Long idCliente, String nro, String marca, float saldo, LocalDate fechaVencimiento);
 
     //Devuelve las tarjetas de un cliente específico
-    List listarTarjetas(Long idCliente);
+    List<AbstractCobrable> listarTarjetas(Long idCliente);
 }

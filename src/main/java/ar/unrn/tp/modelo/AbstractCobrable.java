@@ -4,6 +4,7 @@ import javax.jdo.annotations.Unique;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Map;
 
 @Entity
 public abstract class AbstractCobrable {
@@ -99,5 +100,10 @@ public abstract class AbstractCobrable {
                 ", saldo=" + saldo +
                 ", fechaVencimiento=" + fechaVencimiento +
                 '}';
+    }
+
+    public Map<String, Object> toMap() {
+        return Map.of("id", idCobrable, "metodo", metodo, "codigo", codigo, "saldo", saldo,
+                "vencimiento", fechaVencimiento);
     }
 }
