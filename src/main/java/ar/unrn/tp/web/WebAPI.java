@@ -5,6 +5,7 @@ import ar.unrn.tp.api.DescuentoService;
 import ar.unrn.tp.api.ProductoService;
 import ar.unrn.tp.api.VentaService;
 import ar.unrn.tp.modelo.AbstractCobrable;
+import ar.unrn.tp.modelo.Cliente;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
@@ -31,6 +32,7 @@ public class WebAPI {
             config.enableCorsForAllOrigins();
         }).start(this.webPort);
         app.post("/clientes", crearCliente());
+        app.get("/clientes", obtenerClientes());
         app.put("/clientes/{id}", modificarCliente());
         app.post("/clientes/tarjetas/{id}", agregarTarjeta());
         app.get("/clientes/tarjetas/{id}", obtenerTarjetas());
@@ -51,6 +53,17 @@ public class WebAPI {
             ClienteDTO dto = ctx.bodyAsClass(ClienteDTO.class);
             this.clientes.crearCliente(dto.getNombre(), dto.getApellido(), dto.getDni(), dto.getEmail());
             ctx.json(Map.of("result", "success"));
+        };
+    }
+
+    private Handler obtenerClientes() {
+        return ctx -> {
+            var clientes = this.clientes.clientes();
+            var list = new ArrayList<Map<String, Object>>();
+            for (Cliente cliente : clientes) {
+                list.add(cliente.toMap());
+            }
+            ctx.json(Map.of("result", "success", "clientes", list));
         };
     }
 

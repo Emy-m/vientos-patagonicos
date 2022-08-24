@@ -1,6 +1,7 @@
 package ar.unrn.tp.api;
 
 import ar.unrn.tp.modelo.AbstractCobrable;
+import ar.unrn.tp.modelo.Cliente;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.List;
 public interface ClienteService {
     // validar que el dni no se repita
     void crearCliente(String nombre, String apellido, String dni, String email);
+
+    List<Cliente> clientes();
 
     // validar que sea un cliente existente
     void modificarCliente(Long idCliente, String nombre, String apellido, String dni, String email);

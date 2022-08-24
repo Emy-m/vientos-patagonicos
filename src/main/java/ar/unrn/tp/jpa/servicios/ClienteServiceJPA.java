@@ -37,6 +37,21 @@ public class ClienteServiceJPA implements ClienteService {
     }
 
     @Override
+    public List<Cliente> clientes() {
+        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Cliente> clientes = em.createQuery("select cliente from Cliente cliente", Cliente.class);
+            return clientes.getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (em != null && em.isOpen())
+                em.close();
+        }
+    }
+
+    @Override
     public void modificarCliente(Long idCliente, String nombre, String apellido, String dni, String email) {
         EntityManagerFactory emf = JPAHelper.getJPAFactory();
         EntityManager em = emf.createEntityManager();
