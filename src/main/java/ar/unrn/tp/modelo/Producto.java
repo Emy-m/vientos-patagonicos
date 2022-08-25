@@ -2,6 +2,7 @@ package ar.unrn.tp.modelo;
 
 import javax.jdo.annotations.Unique;
 import javax.persistence.*;
+import java.util.Map;
 
 @Entity
 public class Producto {
@@ -119,5 +120,10 @@ public class Producto {
                 ", categoria=" + categoria +
                 ", precio=" + precio +
                 '}';
+    }
+
+    public Map<String, Object> toMap() {
+        return Map.of("id", idProducto, "descripcion", descripcion, "codigo", codigo, "marca", marca,
+                "categoria", categoria, "precio", precio);
     }
 }

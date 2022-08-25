@@ -66,7 +66,7 @@ public class ProductoServiceJPA implements ProductoService {
     }
 
     @Override
-    public List listarProductos() {
+    public List<Producto> listarProductos() {
         EntityManagerFactory emf = JPAHelper.getJPAFactory();
         EntityManager em = emf.createEntityManager();
         try {

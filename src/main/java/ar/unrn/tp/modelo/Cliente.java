@@ -146,7 +146,14 @@ public class Cliente {
     }
 
     public Map<String, Object> toMap() {
-        return Map.of("id", idCliente, "nombre", nombre, "apellido", apellido, "dni", DNI, "email", email);
+        List<Map<String, Object>> tarjetasMapeadas = new ArrayList<>();
+        if (tarjetas != null) {
+            for (AbstractCobrable tarjeta : tarjetas) {
+                tarjetasMapeadas.add(tarjeta.toMap());
+            }
+        }
+        return Map.of("id", idCliente, "nombre", nombre, "apellido", apellido, "dni", DNI, "email", email,
+                "tarjetas", tarjetasMapeadas);
     }
 
     @Override

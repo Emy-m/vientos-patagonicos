@@ -3,6 +3,7 @@ package ar.unrn.tp.modelo;
 import javax.persistence.Entity;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public class PromocionMarca extends Promocion {
@@ -36,5 +37,10 @@ public class PromocionMarca extends Promocion {
         return "PromocionMarca{" +
                 "marcaEnDescuento='" + marcaEnDescuento + '\'' +
                 "} " + super.toString();
+    }
+
+    @Override
+    public Map<String, Object> toMap() {
+        return Map.of("id", idPromocion, "fechaInicio", fechaInicio, "fechaFin", fechaFin, "descuento", descuento, "marcaEnDescuento", marcaEnDescuento);
     }
 }

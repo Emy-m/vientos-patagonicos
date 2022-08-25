@@ -6,6 +6,8 @@ import ar.unrn.tp.api.ProductoService;
 import ar.unrn.tp.api.VentaService;
 import ar.unrn.tp.modelo.AbstractCobrable;
 import ar.unrn.tp.modelo.Cliente;
+import ar.unrn.tp.modelo.Producto;
+import ar.unrn.tp.modelo.Promocion;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
@@ -36,6 +38,14 @@ public class WebAPI {
         app.put("/clientes/{id}", modificarCliente());
         app.post("/clientes/tarjetas/{id}", agregarTarjeta());
         app.get("/clientes/tarjetas/{id}", obtenerTarjetas());
+
+        app.get("/productos", obtenerProductos());
+
+        app.get("/descuentos", obtenerDescuentos());
+
+        app.post("/ventas", crearVenta());
+
+        app.get("/ventas/precio/{idTarjeta}", obtenerPrecio());
 
         app.exception(RuntimeException.class, (e, ctx) -> {
             ctx.json(Map.of("result", "error", "message", e.getMessage()));
@@ -96,5 +106,50 @@ public class WebAPI {
              }
              ctx.json(Map.of("result", "success", "tarjetas", list));
          };
+    }
+
+    private Handler obtenerProductos() {
+        return ctx -> {
+            var productos = this.productos.listarProductos();
+            var list = new ArrayList<Map<String, Object>>();
+            for (Producto producto : productos) {
+                list.add(producto.toMap());
+            }
+            ctx.json(Map.of("result", "success", "productos", list));
+        };
+    }
+
+    private Handler obtenerDescuentos() {
+        return ctx -> {
+            var descuentos = this.descuentos.descuentosActivos();
+            var list = new ArrayList<Map<String, Object>>();
+            for (Promocion descuento : descuentos) {
+                list.add(descuento.toMap());
+            }
+            ctx.json(Map.of("result", "success", "descuentos", list));
+        };
+    }
+
+    private Handler crearVenta() {
+        return ctx -> {
+            var idCliente = ctx.queryParam("cliente");
+            var idTarjeta = ctx.queryParam("tarjeta");
+            var productos = ctx.body();
+
+            System.out.println(idCliente + " " + idTarjeta + " " + productos);
+
+            ctx.json(Map.of("result", "success"));
+        };
+    }
+
+    private Handler obtenerPrecio() {
+        return ctx -> {
+            var idTarjeta = ctx.pathParam("idTarjeta");
+            var productos = ctx.queryParam("productos");
+
+            System.out.println(idTarjeta + " " + productos);
+
+            ctx.json(Map.of("result", "success"));
+        };
     }
 }

@@ -4,6 +4,7 @@ import javax.jdo.annotations.Unique;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Map;
 
 @Entity
 public class Categoria {
@@ -61,5 +62,9 @@ public class Categoria {
                 "idCategoria=" + idCategoria +
                 ", nombre='" + nombre + '\'' +
                 '}';
+    }
+
+    public Map<String, Object> toMap() {
+        return Map.of("id", idCategoria, "nombre", nombre);
     }
 }

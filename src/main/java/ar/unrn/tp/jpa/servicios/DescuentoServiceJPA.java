@@ -2,13 +2,17 @@ package ar.unrn.tp.jpa.servicios;
 
 import ar.unrn.tp.api.DescuentoService;
 import ar.unrn.tp.modelo.DateHelper;
+import ar.unrn.tp.modelo.Promocion;
 import ar.unrn.tp.modelo.PromocionMarca;
 import ar.unrn.tp.modelo.PromocionMetodoPago;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.TypedQuery;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DescuentoServiceJPA implements DescuentoService {
     @Override
@@ -20,8 +24,7 @@ public class DescuentoServiceJPA implements DescuentoService {
             tx.begin();
 
             //hacer algo con em
-            PromocionMetodoPago descSobreTotal = new PromocionMetodoPago(DateHelper.convertToDate(fechaDesde),
-                    DateHelper.convertToDate(fechaHasta), porcentaje, marcaTarjeta);
+            PromocionMetodoPago descSobreTotal = new PromocionMetodoPago(DateHelper.convertToDate(fechaDesde), DateHelper.convertToDate(fechaHasta), porcentaje, marcaTarjeta);
             em.persist(descSobreTotal);
 
             tx.commit();
@@ -31,8 +34,7 @@ public class DescuentoServiceJPA implements DescuentoService {
             }
             throw new RuntimeException(e);
         } finally {
-            if (em != null && em.isOpen())
-                em.close();
+            if (em != null && em.isOpen()) em.close();
         }
     }
 
@@ -45,8 +47,7 @@ public class DescuentoServiceJPA implements DescuentoService {
             tx.begin();
 
             //hacer algo con em
-            PromocionMarca descMarca = new PromocionMarca(DateHelper.convertToDate(fechaDesde),
-                    DateHelper.convertToDate(fechaHasta), porcentaje, marcaProducto);
+            PromocionMarca descMarca = new PromocionMarca(DateHelper.convertToDate(fechaDesde), DateHelper.convertToDate(fechaHasta), porcentaje, marcaProducto);
             em.persist(descMarca);
 
             tx.commit();
@@ -56,8 +57,25 @@ public class DescuentoServiceJPA implements DescuentoService {
             }
             throw new RuntimeException(e);
         } finally {
-            if (em != null && em.isOpen())
-                em.close();
+            if (em != null && em.isOpen()) em.close();
+        }
+    }
+
+    @Override
+    public List<Promocion> descuentosActivos() {
+        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManager em = emf.createEntityManager();
+        try {
+            //hacer algo con em
+            TypedQuery<Promocion> descuentos = em.createQuery("select promo from Promocion promo where " +
+                    ":now between promo.fechaInicio and promo.fechaFin", Promocion.class);
+            descuentos.setParameter("now", DateHelper.nowWithTime());
+
+            return descuentos.getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (em != null && em.isOpen()) em.close();
         }
     }
 }

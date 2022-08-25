@@ -6,6 +6,7 @@ import javax.persistence.Id;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public abstract class Promocion {
@@ -56,4 +57,6 @@ public abstract class Promocion {
                 ", descuento=" + descuento +
                 '}';
     }
+
+    public abstract Map<String, Object> toMap();
 }
