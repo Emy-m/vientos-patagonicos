@@ -153,14 +153,16 @@ public class WebAPI {
 
     private Handler obtenerPrecio() {
         return ctx -> {
-            var idTarjeta = ctx.queryParam("idTarjeta");
+            var idTarjeta = ctx.queryParam("tarjeta");
             var productos = ctx.queryParam("productos");
-
+            var jsonProds = JSON.parse(productos);
+            System.out.println(productos);
+            System.out.println(jsonProds);
             if (idTarjeta == null || idTarjeta.isEmpty()) {
                 throw new RuntimeException("No hay una tarjeta seleccionada");
             }
 
-            if (productos == null || productos.isEmpty()) {
+            /*if (productos == null || productos.isEmpty()) {
                 throw new RuntimeException("No hay productos");
             }
 
@@ -168,7 +170,7 @@ public class WebAPI {
 
             var precio = this.ventas.calcularMonto(productosList, Long.parseLong(idTarjeta));
 
-            ctx.json(Map.of("result", "success", "precio", precio));
+            ctx.json(Map.of("result", "success", "precio", precio));*/
         };
     }
 }
