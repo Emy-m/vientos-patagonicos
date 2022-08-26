@@ -65,7 +65,7 @@ public class VentaServiceJPA implements VentaService {
             List<Promocion> promocionList = promos.getResultList();
 
             TypedQuery<Producto> prods = em.createQuery("select prod from Producto prod where prod.idProducto in :idProdsList", Producto.class);
-            prods.setParameter("idProdsList", prods);
+            prods.setParameter("idProdsList", productos);
             List<Producto> productoList = prods.getResultList();
 
             CarroDeCompras carro = new CarroDeCompras(productoList, promocionList, tarjeta.getMetodo(), DateHelper.nowWithTime());

@@ -10,8 +10,12 @@ import ar.unrn.tp.modelo.Producto;
 import ar.unrn.tp.modelo.Promocion;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
+import org.eclipse.jetty.util.ajax.JSON;
+import org.eclipse.jetty.util.ajax.JSONObjectConvertor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class WebAPI {
@@ -45,7 +49,7 @@ public class WebAPI {
 
         app.post("/ventas", crearVenta());
 
-        app.get("/ventas/precio/{idTarjeta}", obtenerPrecio());
+        app.get("/ventas/precio", obtenerPrecio());
 
         app.exception(RuntimeException.class, (e, ctx) -> {
             ctx.json(Map.of("result", "error", "message", e.getMessage()));
@@ -134,9 +138,14 @@ public class WebAPI {
         return ctx -> {
             var idCliente = ctx.queryParam("cliente");
             var idTarjeta = ctx.queryParam("tarjeta");
-            var productos = ctx.body();
+            var productos = ctx.queryParam("productos");
 
-            System.out.println(idCliente + " " + idTarjeta + " " + productos);
+            List<Long> productosList = new ArrayList<>();
+            for (String id : productos.split(",")) {
+                productosList.add(Long.parseLong(id));
+            }
+
+            this.ventas.realizarVenta(Long.parseLong(idCliente), productosList, Long.parseLong(idTarjeta));
 
             ctx.json(Map.of("result", "success"));
         };
@@ -144,12 +153,22 @@ public class WebAPI {
 
     private Handler obtenerPrecio() {
         return ctx -> {
-            var idTarjeta = ctx.pathParam("idTarjeta");
+            var idTarjeta = ctx.queryParam("idTarjeta");
             var productos = ctx.queryParam("productos");
 
-            System.out.println(idTarjeta + " " + productos);
+            if (idTarjeta == null || idTarjeta.isEmpty()) {
+                throw new RuntimeException("No hay una tarjeta seleccionada");
+            }
 
-            ctx.json(Map.of("result", "success"));
+            if (productos == null || productos.isEmpty()) {
+                throw new RuntimeException("No hay productos");
+            }
+
+            List<Long> prodsIds = JSON.parse(productos);
+
+            var precio = this.ventas.calcularMonto(productosList, Long.parseLong(idTarjeta));
+
+            ctx.json(Map.of("result", "success", "precio", precio));
         };
     }
 }
