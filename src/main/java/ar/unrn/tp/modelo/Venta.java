@@ -24,7 +24,6 @@ public class Venta {
     protected Venta() {
     }
 
-    // Poner la tarjeta directamente?
     public Venta(Date fechaVenta, Cliente cliente, String metodoDePago, List<Producto> productos,
                  double montoTotal) {
         this.fechaVenta = fechaVenta;

@@ -25,11 +25,14 @@ public class TarjetaDeCredito extends AbstractCobrable {
 
     @Override
     public void debitar(double monto) {
-        if (estaActiva() && tieneSuficiente(monto)) {
-            this.saldo -= monto;
-        } else {
-            throw new RuntimeException("No tiene saldo suficiente o esta inactiva");
+        if (!estaActiva()) {
+            throw new RuntimeException("La tarjeta esta inactiva");
         }
+        if (!tieneSuficiente(monto)) {
+            throw new RuntimeException("No tiene saldo suficiente");
+        }
+
+        this.saldo -= monto;
     }
 
     @Override

@@ -8,6 +8,7 @@ import ar.unrn.tp.modelo.AbstractCobrable;
 import ar.unrn.tp.modelo.Cliente;
 import ar.unrn.tp.modelo.Producto;
 import ar.unrn.tp.modelo.Promocion;
+import com.google.gson.Gson;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 import org.eclipse.jetty.util.ajax.JSON;
@@ -136,41 +137,35 @@ public class WebAPI {
 
     private Handler crearVenta() {
         return ctx -> {
+            Gson gson = new Gson();
             var idCliente = ctx.queryParam("cliente");
             var idTarjeta = ctx.queryParam("tarjeta");
-            var productos = ctx.queryParam("productos");
+            var productos = ctx.bodyAsClass(Long[].class);
 
-            List<Long> productosList = new ArrayList<>();
-            for (String id : productos.split(",")) {
-                productosList.add(Long.parseLong(id));
-            }
+            List<Long> productosList = Arrays.asList(productos);
+            Long clienteId = gson.fromJson(idCliente, Long.class);
+            Long tarjetaId = gson.fromJson(idTarjeta, Long.class);
 
-            this.ventas.realizarVenta(Long.parseLong(idCliente), productosList, Long.parseLong(idTarjeta));
+            this.ventas.realizarVenta(clienteId, productosList, tarjetaId);
 
-            ctx.json(Map.of("result", "success"));
+            ctx.json(Map.of("result", "success", "message", "Venta realizada con exito"));
         };
     }
 
     private Handler obtenerPrecio() {
         return ctx -> {
+            Gson gson = new Gson();
             var idTarjeta = ctx.queryParam("tarjeta");
             var productos = ctx.queryParam("productos");
-            var jsonProds = JSON.parse(productos);
-            System.out.println(productos);
-            System.out.println(jsonProds);
-            if (idTarjeta == null || idTarjeta.isEmpty()) {
-                throw new RuntimeException("No hay una tarjeta seleccionada");
-            }
 
-            /*if (productos == null || productos.isEmpty()) {
-                throw new RuntimeException("No hay productos");
-            }
+            Long[] prodsIds = gson.fromJson(productos, Long[].class);
+            List<Long> productosList = Arrays.asList(prodsIds);
 
-            List<Long> prodsIds = JSON.parse(productos);
+            Long tarjeta = gson.fromJson(idTarjeta, Long.class);
 
-            var precio = this.ventas.calcularMonto(productosList, Long.parseLong(idTarjeta));
+            var precio = this.ventas.calcularMonto(productosList, tarjeta);
 
-            ctx.json(Map.of("result", "success", "precio", precio));*/
+            ctx.json(Map.of("result", "success", "precio", precio));
         };
     }
 }

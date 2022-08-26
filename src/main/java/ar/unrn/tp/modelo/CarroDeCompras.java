@@ -11,18 +11,20 @@ public class CarroDeCompras {
     private List<Promocion> promociones;
     private String metodoPago;
 
-    public CarroDeCompras(List<Producto> productos, List<Promocion> promos, String metodoPago, Date fechaCreacion) {
+    public CarroDeCompras(List<Producto> productos, List<Promocion> promos, Date fechaCreacion) {
         this.productos = productos;
         this.promociones = promos;
-        this.metodoPago = metodoPago;
         this.fechaCreacion = fechaCreacion;
     }
 
+    public CarroDeCompras(List<Producto> productos, List<Promocion> promos, String metodoPago, Date fechaCreacion) {
+        this(productos, promos, fechaCreacion);
+        this.metodoPago = metodoPago;
+    }
+
     public CarroDeCompras(List<Producto> productos, Cliente cliente, Date fechaCreacion, List<Promocion> promos) {
-        this.productos = productos;
+        this(productos, promos, fechaCreacion);
         this.cliente = cliente;
-        this.fechaCreacion = fechaCreacion;
-        this.promociones = promos;
     }
 
     public CarroDeCompras(List<Producto> productos, Cliente cliente, Date fechaCreacion, List<Promocion> promos, String metodoPago) {
@@ -65,6 +67,10 @@ public class CarroDeCompras {
     }
 
     public double montoTotal() {
+        if (this.productos.isEmpty()) {
+            throw new RuntimeException("No hay productos");
+        }
+
         double total = 0;
 
         for (Producto producto : this.getProductos()) {

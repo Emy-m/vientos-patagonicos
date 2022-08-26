@@ -18,10 +18,21 @@ public class VentaServiceJPA implements VentaService {
         try {
             tx.begin();
             //hacer algo con em
+            if (idCliente == null) {
+                throw new RuntimeException("Servicio Venta - calcularMonto: No hay cliente");
+            }
+
+            if (idTarjeta == null) {
+                throw new RuntimeException("Servicio Venta - calcularMonto: No hay tarjeta");
+            }
+
+            if (productos == null) {
+                throw new RuntimeException("Servicio Venta - calcularMonto: No hay productos");
+            }
+
             Cliente cliente = em.find(Cliente.class, idCliente);
             AbstractCobrable tarjeta = cliente.getTarjeta(idTarjeta);
 
-            // Se guarda la venta con este listado de productos
             TypedQuery<Producto> productosReales = em.createQuery("select prod from Producto prod where prod.idProducto in :idProdsList", Producto.class);
             productosReales.setParameter("idProdsList", productos);
             List<Producto> prods = productosReales.getResultList();
@@ -54,8 +65,13 @@ public class VentaServiceJPA implements VentaService {
         EntityManager em = emf.createEntityManager();
         try {
             //hacer algo con em
+            if (idTarjeta == null) {
+                throw new RuntimeException("Servicio Venta - calcularMonto: No hay tarjeta");
+            }
+
             AbstractCobrable tarjeta = em.find(AbstractCobrable.class, idTarjeta);
-            if (productos == null || productos.size() == 0) {
+
+            if (productos == null) {
                 throw new RuntimeException("Servicio Venta - calcularMonto: No hay productos");
             }
 
