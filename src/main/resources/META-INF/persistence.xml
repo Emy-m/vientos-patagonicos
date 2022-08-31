@@ -8,4 +8,17 @@
             <property name="javax.persistence.jdbc.password" value="admin"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="jpa-hibernate" transaction-type="RESOURCE_LOCAL">
+        <description>My New Persistence Unit</description>
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <properties>
+            <property name="connection.driver_class" value="com.mysql.jdbc.Driver" />
+            <property name="connection.url" value="jdbc:mysql://localhost/vientospatagonicos" />
+            <property name="connection.username" value="root" />
+            <property name="connection.pool_size" value="5" />
+            <property name="dialect" value="org.hibernate.dialect.MySQLDialect" />
+            <property name="show_sql" value="true" />
+        </properties>
+    </persistence-unit>
 </persistence>
