@@ -4,17 +4,19 @@ import ar.unrn.tp.api.ProductoService;
 import ar.unrn.tp.modelo.Categoria;
 import ar.unrn.tp.modelo.Producto;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 
 public class ProductoServiceJPA implements ProductoService {
+    private String persistenceUnit;
+
+    public ProductoServiceJPA(String persistenceUnit) {
+        this.persistenceUnit = persistenceUnit;
+    }
 
     @Override
     public void crearProducto(String codigo, String descripcion, String marca, float precio, Long IdCategoría) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -39,7 +41,7 @@ public class ProductoServiceJPA implements ProductoService {
 
     @Override
     public void modificarProducto(Long idProducto, String descripcion, String marca, float precio, Long IdCategoría) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -67,7 +69,7 @@ public class ProductoServiceJPA implements ProductoService {
 
     @Override
     public List<Producto> listarProductos() {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         try {
             //hacer algo con em

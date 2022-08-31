@@ -52,11 +52,6 @@ public class WebAPI {
 
         app.get("/ventas/precio", obtenerPrecio());
 
-        app.exception(RuntimeException.class, (e, ctx) -> {
-            ctx.json(Map.of("result", "error", "message", e.getMessage()));
-            // log error in a stream...
-        });
-
         app.exception(Exception.class, (e, ctx) -> {
             ctx.json(Map.of("result", "error", "message", "Ups... algo se rompió.: " + e.getMessage())).status(400);
             // log error in a stream...

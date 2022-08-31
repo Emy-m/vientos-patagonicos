@@ -1,6 +1,6 @@
 package ar.unrn.tp.modelo;
 
-import javax.jdo.annotations.Unique;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -12,7 +12,7 @@ public class Categoria {
     @GeneratedValue
     private Long idCategoria;
 
-    @Unique
+    @Column(unique = true)
     private String nombre;
 
     protected Categoria() {}

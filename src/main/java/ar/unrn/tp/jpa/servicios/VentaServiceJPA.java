@@ -3,16 +3,19 @@ package ar.unrn.tp.jpa.servicios;
 import ar.unrn.tp.api.VentaService;
 import ar.unrn.tp.modelo.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 
 public class VentaServiceJPA implements VentaService {
+    private String persistenceUnit;
+
+    public VentaServiceJPA(String persistenceUnit) {
+        this.persistenceUnit = persistenceUnit;
+    }
+
     @Override
     public void realizarVenta(Long idCliente, List<Long> productos, Long idTarjeta) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -61,7 +64,7 @@ public class VentaServiceJPA implements VentaService {
 
     @Override
     public float calcularMonto(List<Long> productos, Long idTarjeta) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         try {
             //hacer algo con em
@@ -96,7 +99,7 @@ public class VentaServiceJPA implements VentaService {
 
     @Override
     public List ventas() {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         try {
             //hacer algo con em

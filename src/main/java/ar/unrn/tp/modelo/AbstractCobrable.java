@@ -1,6 +1,5 @@
 package ar.unrn.tp.modelo;
 
-import javax.jdo.annotations.Unique;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
@@ -14,7 +13,7 @@ public abstract class AbstractCobrable {
 
     protected String metodo;
 
-    @Unique
+    @Column(unique = true)
     protected String codigo;
     protected float saldo;
     protected Date fechaVencimiento;

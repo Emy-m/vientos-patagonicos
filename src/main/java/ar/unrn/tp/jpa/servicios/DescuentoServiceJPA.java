@@ -6,18 +6,20 @@ import ar.unrn.tp.modelo.Promocion;
 import ar.unrn.tp.modelo.PromocionMarca;
 import ar.unrn.tp.modelo.PromocionMetodoPago;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DescuentoServiceJPA implements DescuentoService {
+    private String persistenceUnit;
+
+    public DescuentoServiceJPA(String persistenceUnit) {
+        this.persistenceUnit = persistenceUnit;
+    }
+
     @Override
     public void crearDescuentoSobreTotal(String marcaTarjeta, LocalDate fechaDesde, LocalDate fechaHasta, float porcentaje) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -40,7 +42,7 @@ public class DescuentoServiceJPA implements DescuentoService {
 
     @Override
     public void crearDescuento(String marcaProducto, LocalDate fechaDesde, LocalDate fechaHasta, float porcentaje) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -63,7 +65,7 @@ public class DescuentoServiceJPA implements DescuentoService {
 
     @Override
     public List<Promocion> descuentosActivos() {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         try {
             //hacer algo con em

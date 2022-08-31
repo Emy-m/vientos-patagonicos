@@ -11,10 +11,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ClienteServiceJPA implements ClienteService {
+    private String persistenceUnit;
+
+    public ClienteServiceJPA(String persistenceUnit) {
+        this.persistenceUnit = persistenceUnit;
+    }
 
     @Override
     public void crearCliente(String nombre, String apellido, String dni, String email) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -38,7 +43,7 @@ public class ClienteServiceJPA implements ClienteService {
 
     @Override
     public List<Cliente> clientes() {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Cliente> clientes = em.createQuery("select cliente from Cliente cliente", Cliente.class);
@@ -53,7 +58,7 @@ public class ClienteServiceJPA implements ClienteService {
 
     @Override
     public void modificarCliente(Long idCliente, String nombre, String apellido, String dni, String email) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -80,7 +85,7 @@ public class ClienteServiceJPA implements ClienteService {
 
     @Override
     public void agregarTarjeta(Long idCliente, String nro, String marca, float saldo, LocalDate fechaVencimiento) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -108,7 +113,7 @@ public class ClienteServiceJPA implements ClienteService {
 
     @Override
     public List listarTarjetas(Long idCliente) {
-        EntityManagerFactory emf = JPAHelper.getJPAFactory();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         try {
             //hacer algo con em

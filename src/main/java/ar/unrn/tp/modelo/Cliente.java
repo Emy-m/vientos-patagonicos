@@ -2,7 +2,6 @@ package ar.unrn.tp.modelo;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
-import javax.jdo.annotations.Unique;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +15,12 @@ public class Cliente {
     private String nombre;
     private String apellido;
 
-    @Unique
+    @Column(unique = true)
     private String DNI;
 
     private String email;
 
-    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<AbstractCobrable> tarjetas = new ArrayList<>();
 
     protected Cliente() {

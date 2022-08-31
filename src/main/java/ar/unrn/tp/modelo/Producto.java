@@ -1,6 +1,5 @@
 package ar.unrn.tp.modelo;
 
-import javax.jdo.annotations.Unique;
 import javax.persistence.*;
 import java.util.Map;
 
@@ -10,7 +9,7 @@ public class Producto {
     @GeneratedValue
     private Long idProducto;
 
-    @Unique
+    @Column(unique = true)
     private String codigo;
 
     private String descripcion;
