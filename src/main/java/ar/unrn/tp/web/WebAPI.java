@@ -58,7 +58,7 @@ public class WebAPI {
         });
 
         app.exception(Exception.class, (e, ctx) -> {
-            ctx.json(Map.of("result", "error", "message", "Ups... algo se rompió.: " + e.getMessage()));
+            ctx.json(Map.of("result", "error", "message", "Ups... algo se rompió.: " + e.getMessage())).status(400);
             // log error in a stream...
         });
     }

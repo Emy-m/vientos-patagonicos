@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Entity
 public class TarjetaDeCredito extends AbstractCobrable {
-    public TarjetaDeCredito() {}
+    protected TarjetaDeCredito() {}
 
     public TarjetaDeCredito(String metodo, String codigo, float saldo, Date fechaVencimiento) {
         super(metodo, codigo, saldo, fechaVencimiento);
