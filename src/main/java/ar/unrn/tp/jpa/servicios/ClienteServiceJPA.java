@@ -2,12 +2,14 @@ package ar.unrn.tp.jpa.servicios;
 
 
 import ar.unrn.tp.api.ClienteService;
+import ar.unrn.tp.modelo.AbstractCobrable;
 import ar.unrn.tp.modelo.Cliente;
 import ar.unrn.tp.modelo.DateHelper;
 import ar.unrn.tp.servicios.TarjetaDeCredito;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClienteServiceJPA implements ClienteService {
@@ -118,7 +120,16 @@ public class ClienteServiceJPA implements ClienteService {
         try {
             //hacer algo con em
             Cliente cliente = em.find(Cliente.class, idCliente);
-            return cliente.getTarjetas();
+            /*//Esta es la mejor opcion sin romper el encapsulamiento, devolviendo la lista con FetchType.EAGER
+            // en las tarjetas del cliente
+            return cliente.getTarjetas();*/
+
+            // romper el encapsulamiento crendo y devolviendo una nueva lista partiendo de un Proxy
+            List list = new ArrayList<>();
+            for (AbstractCobrable abstractCobrable : cliente.getTarjetas()) {
+                list.add(abstractCobrable);
+            }
+            return list;
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
