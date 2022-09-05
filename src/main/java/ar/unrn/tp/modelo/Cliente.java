@@ -97,6 +97,16 @@ public class Cliente {
         return tarjetas;
     }
 
+    public List<AbstractCobrable> tarjetas() {
+        List<AbstractCobrable> tarjetasList = new ArrayList<>();
+
+        for (AbstractCobrable tarjeta : tarjetas) {
+            tarjetasList.add(tarjeta);
+        }
+
+        return tarjetasList;
+    }
+
     public AbstractCobrable getTarjeta(String unaTarjeta) {
         AbstractCobrable tarjeta = null;
 

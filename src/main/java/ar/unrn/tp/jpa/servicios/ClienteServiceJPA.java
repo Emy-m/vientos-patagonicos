@@ -120,16 +120,17 @@ public class ClienteServiceJPA implements ClienteService {
         try {
             //hacer algo con em
             Cliente cliente = em.find(Cliente.class, idCliente);
+
+            if (cliente == null) {
+                throw new RuntimeException("No se encontro el cliente");
+            }
+
             /*//Esta es la mejor opcion sin romper el encapsulamiento, devolviendo la lista con FetchType.EAGER
             // en las tarjetas del cliente
             return cliente.getTarjetas();*/
 
             // romper el encapsulamiento crendo y devolviendo una nueva lista partiendo de un Proxy
-            List list = new ArrayList<>();
-            for (AbstractCobrable abstractCobrable : cliente.getTarjetas()) {
-                list.add(abstractCobrable);
-            }
-            return list;
+            return cliente.tarjetas();
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
