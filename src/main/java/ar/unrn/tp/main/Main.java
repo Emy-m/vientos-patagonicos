@@ -18,7 +18,7 @@ public class Main {
         DescuentoService descuentoServiceJPA = new DescuentoServiceJPA(PERSISTENCE_UNIT);
         VentaService ventaServiceJPA = new VentaServiceJPA(PERSISTENCE_UNIT);
 
-        WebAPI api = new WebAPI(clienteService, descuentoServiceJPA, productoServiceJPA, ventaServiceJPA, 7070);
+        WebAPI api = new WebAPI(clienteService, descuentoServiceJPA, productoServiceJPA, ventaServiceJPA, 7071);
         api.start();
     }
 }

@@ -9,6 +9,9 @@ public class Producto {
     @GeneratedValue
     private Long idProducto;
 
+    @Version
+    private Long version;
+
     @Column(unique = true)
     private String codigo;
 
@@ -52,6 +55,14 @@ public class Producto {
 
     public void setIdProducto(Long idProducto) {
         this.idProducto = idProducto;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public String getCodigo() {

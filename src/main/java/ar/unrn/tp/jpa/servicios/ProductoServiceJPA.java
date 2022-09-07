@@ -40,7 +40,7 @@ public class ProductoServiceJPA implements ProductoService {
     }
 
     @Override
-    public void modificarProducto(Long idProducto, String descripcion, String marca, float precio, Long IdCategoría) {
+    public void modificarProducto(Long idProducto, String descripcion, String marca, float precio, Long IdCategoría, Long version) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -50,13 +50,19 @@ public class ProductoServiceJPA implements ProductoService {
             //hacer algo con em
             Categoria categoria = em.find(Categoria.class, IdCategoría);
             Producto producto = em.getReference(Producto.class, idProducto);
+
             producto.setCategoria(categoria);
             producto.setDescripcion(descripcion);
             producto.setMarca(marca);
             producto.setPrecio(precio);
+            producto.setVersion(version);
+            em.merge(producto);
 
             tx.commit();
-        } catch (Exception e) {
+        } catch (OptimisticLockException e) {
+            throw new RuntimeException("La version del producto que quiere editar ya no es la ultima", e);
+        }
+        catch (Exception e) {
             if (tx.isActive()) {
                 tx.rollback();
             }
