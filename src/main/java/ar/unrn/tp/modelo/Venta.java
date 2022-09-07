@@ -11,6 +11,9 @@ public class Venta {
     @GeneratedValue
     private Long idVenta;
 
+    @Column(unique = true, nullable = false)
+    private String codigoUnico;
+
     @ManyToOne(fetch = FetchType.EAGER)
     private Cliente cliente;
 
@@ -49,6 +52,14 @@ public class Venta {
 
     public void setIdVenta(Long idVenta) {
         this.idVenta = idVenta;
+    }
+
+    public String getCodigoUnico() {
+        return codigoUnico;
+    }
+
+    public void setCodigoUnico(String codigoUnico) {
+        this.codigoUnico = codigoUnico;
     }
 
     public Date getFechaVenta() {
@@ -95,6 +106,7 @@ public class Venta {
     public String toString() {
         return "Venta{" +
                 "idVenta=" + idVenta +
+                ", codigoUnico='" + codigoUnico + '\'' +
                 ", cliente=" + cliente +
                 ", detalleProductos=" + detalleProductos +
                 ", fechaVenta=" + fechaVenta +

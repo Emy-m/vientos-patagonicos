@@ -4,6 +4,8 @@ import ar.unrn.tp.api.VentaService;
 import ar.unrn.tp.modelo.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 public class VentaServiceJPA implements VentaService {
@@ -19,8 +21,6 @@ public class VentaServiceJPA implements VentaService {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
-            tx.begin();
-            //hacer algo con em
             if (idCliente == null) {
                 throw new RuntimeException("Servicio Venta - calcularMonto: No hay cliente");
             }
@@ -32,6 +32,9 @@ public class VentaServiceJPA implements VentaService {
             if (productos == null) {
                 throw new RuntimeException("Servicio Venta - calcularMonto: No hay productos");
             }
+
+            tx.begin();
+            //hacer algo con em
 
             Cliente cliente = em.find(Cliente.class, idCliente);
             AbstractCobrable tarjeta = cliente.getTarjeta(idTarjeta);
@@ -45,10 +48,25 @@ public class VentaServiceJPA implements VentaService {
             promos.setParameter("now", DateHelper.nowWithTime());
             List<Promocion> promocionList = promos.getResultList();
 
+            int anioActual = LocalDate.now(ZoneId.systemDefault()).getYear();
+            TypedQuery<CodigoUnico> codigoUnicoQuery = em.createQuery("from CodigoUnico where anio = :anioActual", CodigoUnico.class);
+            codigoUnicoQuery.setParameter("anioActual", anioActual);
+            codigoUnicoQuery.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+            CodigoUnico codigoUnico = null;
+
+            try {
+                codigoUnico = codigoUnicoQuery.getSingleResult();
+                codigoUnico.aumentarCodigoUnico();
+            } catch (NoResultException e) {
+                codigoUnico = new CodigoUnico(1, anioActual);
+            }
+
             CarroDeCompras carro = new CarroDeCompras(prods, cliente, DateHelper.nowWithTime(), promocionList,
                     tarjeta.getMetodo());
             Venta venta = carro.pagarCarrito();
+            venta.setCodigoUnico(codigoUnico.devolverCodigoUnico());
             em.persist(venta);
+            em.persist(codigoUnico);
 
             tx.commit();
         } catch (Exception e) {
