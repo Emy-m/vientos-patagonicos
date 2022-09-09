@@ -1,18 +1,10 @@
 package ar.unrn.tp.web;
 
-import ar.unrn.tp.api.ClienteService;
-import ar.unrn.tp.api.DescuentoService;
-import ar.unrn.tp.api.ProductoService;
-import ar.unrn.tp.api.VentaService;
-import ar.unrn.tp.modelo.AbstractCobrable;
-import ar.unrn.tp.modelo.Cliente;
-import ar.unrn.tp.modelo.Producto;
-import ar.unrn.tp.modelo.Promocion;
+import ar.unrn.tp.api.*;
+import ar.unrn.tp.modelo.*;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
-import org.eclipse.jetty.util.ajax.JSON;
-import org.eclipse.jetty.util.ajax.JSONObjectConvertor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,14 +16,16 @@ public class WebAPI {
     private DescuentoService descuentos;
     private ProductoService productos;
     private VentaService ventas;
+    private CategoriaService categorias;
     private int webPort;
 
-    public WebAPI(ClienteService clientes, DescuentoService descuentos, ProductoService productos, VentaService ventas, int webPort) {
+    public WebAPI(ClienteService clientes, DescuentoService descuentos, ProductoService productos, VentaService ventas, CategoriaService categorias, int webPort) {
         this.clientes = clientes;
         this.descuentos = descuentos;
         this.productos = productos;
         this.ventas = ventas;
         this.webPort = webPort;
+        this.categorias = categorias;
     }
 
     public void start() {
@@ -45,12 +39,16 @@ public class WebAPI {
         app.get("/clientes/tarjetas/{id}", obtenerTarjetas());
 
         app.get("/productos", obtenerProductos());
+        app.post("/productos", crearProducto());
+        app.put("/productos/{id}", modificarProducto());
 
         app.get("/descuentos", obtenerDescuentos());
 
         app.post("/ventas", crearVenta());
 
         app.get("/ventas/precio", obtenerPrecio());
+
+        app.get("/categorias", obtenerCategorias());
 
         app.exception(Exception.class, (e, ctx) -> {
             ctx.json(Map.of("result", "error", "message", "Ups... algo se rompió.: " + e.getMessage())).status(400);
@@ -119,6 +117,23 @@ public class WebAPI {
         };
     }
 
+    private Handler crearProducto() {
+        return ctx -> {
+            ProductoDTO dto = ctx.bodyAsClass(ProductoDTO.class);
+            this.productos.crearProducto(dto.getCodigo(), dto.getDescripcion(), dto.getMarca(), Float.parseFloat(dto.getPrecio()), Long.parseLong(dto.getCategoria()));
+            ctx.json(Map.of("result", "success"));
+        };
+    }
+
+    private Handler modificarProducto() {
+        return ctx -> {
+            ProductoDTO dto = ctx.bodyAsClass(ProductoDTO.class);
+            Long id = Long.valueOf(ctx.pathParam("id"));
+            this.productos.modificarProducto(id, dto.getDescripcion(), dto.getMarca(), Float.parseFloat(dto.getPrecio()), Long.parseLong(dto.getCategoria()), Long.parseLong(dto.getVersion()));
+            ctx.json(Map.of("result", "success", "message", "Producto modificado con exito"));
+        };
+    }
+
     private Handler obtenerDescuentos() {
         return ctx -> {
             var descuentos = this.descuentos.descuentosActivos();
@@ -161,6 +176,17 @@ public class WebAPI {
             var precio = this.ventas.calcularMonto(productosList, tarjeta);
 
             ctx.json(Map.of("result", "success", "precio", precio));
+        };
+    }
+
+    private Handler obtenerCategorias() {
+        return ctx -> {
+            var categoriasList = this.categorias.categorias();
+            var list = new ArrayList<Map<String, Object>>();
+            for (Categoria categoria : categoriasList) {
+                list.add(categoria.toMap());
+            }
+            ctx.json(Map.of("result", "success", "categorias", list));
         };
     }
 }

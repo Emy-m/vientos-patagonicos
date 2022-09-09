@@ -134,6 +134,6 @@ public class Producto {
 
     public Map<String, Object> toMap() {
         return Map.of("id", idProducto, "descripcion", descripcion, "codigo", codigo, "marca", marca,
-                "categoria", categoria, "precio", precio);
+                "categoria", categoria, "precio", precio, "version", version);
     }
 }
