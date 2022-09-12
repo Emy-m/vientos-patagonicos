@@ -129,7 +129,7 @@ public class WebAPI {
         return ctx -> {
             ProductoDTO dto = ctx.bodyAsClass(ProductoDTO.class);
             Long id = Long.valueOf(ctx.pathParam("id"));
-            this.productos.modificarProducto(id, dto.getDescripcion(), dto.getMarca(), Float.parseFloat(dto.getPrecio()), Long.parseLong(dto.getCategoria()), Long.parseLong(dto.getVersion()));
+            this.productos.modificarProducto(id, dto.getCodigo(), dto.getDescripcion(), dto.getMarca(), Float.parseFloat(dto.getPrecio()), Long.parseLong(dto.getCategoria()), Long.parseLong(dto.getVersion()));
             ctx.json(Map.of("result", "success", "message", "Producto modificado con exito"));
         };
     }

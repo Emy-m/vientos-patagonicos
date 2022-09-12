@@ -40,7 +40,7 @@ public class ProductoServiceJPA implements ProductoService {
     }
 
     @Override
-    public void modificarProducto(Long idProducto, String descripcion, String marca, float precio, Long IdCategoría, Long version) {
+    public void modificarProducto(Long idProducto, String codigo, String descripcion, String marca, float precio, Long IdCategoría, Long version) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -49,12 +49,8 @@ public class ProductoServiceJPA implements ProductoService {
 
             //hacer algo con em
             Categoria categoria = em.find(Categoria.class, IdCategoría);
-            Producto producto = em.getReference(Producto.class, idProducto);
-
-            producto.setCategoria(categoria);
-            producto.setDescripcion(descripcion);
-            producto.setMarca(marca);
-            producto.setPrecio(precio);
+            Producto producto = new Producto(codigo, descripcion, marca, categoria, precio);
+            producto.setIdProducto(idProducto);
             producto.setVersion(version);
             em.merge(producto);
 
