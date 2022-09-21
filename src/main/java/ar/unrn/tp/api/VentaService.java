@@ -16,5 +16,7 @@ public interface VentaService {
 
     //Devuelve todas las ventas realizadas
     List ventas();
+
+    List ultimas(Long id);
 }
 

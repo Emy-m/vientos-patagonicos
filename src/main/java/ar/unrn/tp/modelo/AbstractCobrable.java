@@ -59,8 +59,8 @@ public abstract class AbstractCobrable {
         this.saldo = saldo;
     }
 
-    public LocalDate getFechaVencimiento() {
-        return DateHelper.convertToLocalDate(fechaVencimiento);
+    public Date getFechaVencimiento() {
+        return fechaVencimiento;
     }
 
     public void setFechaVencimiento(Date fechaVencimiento) {

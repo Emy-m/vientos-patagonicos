@@ -45,6 +45,7 @@ public class WebAPI {
         app.get("/descuentos", obtenerDescuentos());
 
         app.post("/ventas", crearVenta());
+        app.get("/ventas/ultimas/{id}", obtenerUltimasVentas());
 
         app.get("/ventas/precio", obtenerPrecio());
 
@@ -187,6 +188,15 @@ public class WebAPI {
                 list.add(categoria.toMap());
             }
             ctx.json(Map.of("result", "success", "categorias", list));
+        };
+    }
+
+    private Handler obtenerUltimasVentas() {
+        return ctx -> {
+            Long idCliente = Long.valueOf(ctx.pathParam("id"));
+            var list = this.ventas.ultimas(idCliente);
+
+            ctx.json(Map.of("result", "success", "ventas", list));
         };
     }
 }

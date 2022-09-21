@@ -12,6 +12,7 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <datasource-mapping>
+          <factory-entry name="jpa-mysql" />
           <factory-entry name="jpa-objectdb" />
         </datasource-mapping>
         <naming-strategy-map />

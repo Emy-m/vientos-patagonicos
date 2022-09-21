@@ -2,6 +2,7 @@ package ar.unrn.tp.jpa.servicios;
 
 import ar.unrn.tp.api.VentaService;
 import ar.unrn.tp.modelo.*;
+import redis.clients.jedis.Jedis;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -128,6 +129,39 @@ public class VentaServiceJPA implements VentaService {
         } finally {
             if (em != null && em.isOpen())
                 em.close();
+        }
+    }
+
+    @Override
+    public List ultimas(Long id) {
+        // si no esta en jedis cache busca por jpa
+        Jedis jedis = new Jedis("redis://default:redispw@localhost:49153");
+        List<String> ultimasVentas = jedis.zrange("ultimasVentas", 0, -1);
+
+        if (ultimasVentas.size() == 0) {
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
+            EntityManager em = emf.createEntityManager();
+            try {
+                //hacer algo con em
+                Cliente cliente = em.find(Cliente.class, id);
+                TypedQuery<Venta> ventas = em.createQuery("select venta from Venta venta where venta.cliente = :clientParam order by venta.fechaVenta asc", Venta.class);
+                ventas.setParameter("clientParam", cliente);
+                ventas.setMaxResults(3);
+                List<Venta> ultimasVentasJPA = ventas.getResultList();
+                for (int i = 1; i <= ultimasVentasJPA.size(); i++) {
+                    jedis.zadd("ultimasVentas", i, ultimasVentasJPA.get(i - 1).toString());
+                }
+
+                return ultimasVentasJPA;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                if (em != null && em.isOpen())
+                    em.close();
+            }
+        }
+        else {
+            return ultimasVentas;
         }
     }
 }
