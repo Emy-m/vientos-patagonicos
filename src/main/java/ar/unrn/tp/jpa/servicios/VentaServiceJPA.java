@@ -2,11 +2,13 @@ package ar.unrn.tp.jpa.servicios;
 
 import ar.unrn.tp.api.VentaService;
 import ar.unrn.tp.modelo.*;
+import com.google.gson.Gson;
 import redis.clients.jedis.Jedis;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
 public class VentaServiceJPA implements VentaService {
@@ -134,9 +136,14 @@ public class VentaServiceJPA implements VentaService {
 
     @Override
     public List ultimas(Long id) {
-        // si no esta en jedis cache busca por jpa
+        // si no esta en jedis busca por jpa
+        // agregar el id en jedis, la key es ultimasVentas, entonces cualquier cliente que la acceda ve lo de otro en la escritura y lectura
+        // no hacer un for con llamadas a base de datos por que es ineficiente, crear la coleccion con lo que necesito y lo agrego una ves
+        // filtrar los datos de las ventas que necesite, no es necesario el cliente por ejemplo, o crear otro objeto "VentaSimplificada" con esos datos asi es mas facil de parsear
         Jedis jedis = new Jedis("redis://default:redispw@localhost:49153");
+        // aca taria mal la key
         List<String> ultimasVentas = jedis.zrange("ultimasVentas", 0, -1);
+        Gson gson = new Gson();
 
         if (ultimasVentas.size() == 0) {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnit);
@@ -144,12 +151,13 @@ public class VentaServiceJPA implements VentaService {
             try {
                 //hacer algo con em
                 Cliente cliente = em.find(Cliente.class, id);
-                TypedQuery<Venta> ventas = em.createQuery("select venta from Venta venta where venta.cliente = :clientParam order by venta.fechaVenta asc", Venta.class);
+                TypedQuery<Venta> ventas = em.createQuery("select venta from Venta venta where venta.cliente = :clientParam order by venta.fechaVenta desc", Venta.class);
                 ventas.setParameter("clientParam", cliente);
                 ventas.setMaxResults(3);
                 List<Venta> ultimasVentasJPA = ventas.getResultList();
-                for (int i = 1; i <= ultimasVentasJPA.size(); i++) {
-                    jedis.zadd("ultimasVentas", i, ultimasVentasJPA.get(i - 1).toString());
+                for (Venta venta : ultimasVentasJPA) {
+                    // aca taria mal 2 cosas, la key y llamada a bd dentro de un for
+                    jedis.zadd("ultimasVentas", (double)venta.getFechaVenta().getTime(), gson.toJson(venta));
                 }
 
                 return ultimasVentasJPA;
@@ -161,7 +169,11 @@ public class VentaServiceJPA implements VentaService {
             }
         }
         else {
-            return ultimasVentas;
+            List<Venta> ultimasVentasParsed = new ArrayList<>();
+            for (String venta : ultimasVentas) {
+                ultimasVentasParsed.add(gson.fromJson(venta, Venta.class));
+            }
+            return ultimasVentasParsed;
         }
     }
 }
