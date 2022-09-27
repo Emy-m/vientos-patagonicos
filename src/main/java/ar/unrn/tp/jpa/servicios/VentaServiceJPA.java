@@ -1,10 +1,10 @@
 package ar.unrn.tp.jpa.servicios;
 
 import ar.unrn.tp.api.VentaService;
+import ar.unrn.tp.cache.CacheService;
 import ar.unrn.tp.modelo.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import redis.clients.jedis.Jedis;
 
 import javax.persistence.*;
 import java.lang.reflect.Type;
@@ -16,9 +16,11 @@ import java.util.List;
 
 public class VentaServiceJPA implements VentaService {
     private String persistenceUnit;
+    private CacheService cacheService;
 
-    public VentaServiceJPA(String persistenceUnit) {
+    public VentaServiceJPA(String persistenceUnit, CacheService cacheService) {
         this.persistenceUnit = persistenceUnit;
+        this.cacheService = cacheService;
     }
 
     @Override
@@ -73,6 +75,9 @@ public class VentaServiceJPA implements VentaService {
             venta.setCodigoUnico(codigoUnico.devolverCodigoUnico());
             em.persist(venta);
             em.persist(codigoUnico);
+
+            String redisClientKey = "ultimas:" + idCliente;
+            cacheService.deleteCache(redisClientKey);
 
             tx.commit();
         } catch (Exception e) {
@@ -140,10 +145,9 @@ public class VentaServiceJPA implements VentaService {
     @Override
     public List ultimas(Long id) {
         // si no esta en jedis busca por jpa
-        Jedis jedis = new Jedis("redis://default:redispw@localhost:49154");
         Gson gson = new Gson();
         String redisClientKey = "ultimas:" + id;
-        String ultimasVentas = jedis.get(redisClientKey);
+        String ultimasVentas = cacheService.getCache(redisClientKey);
         Type type = new TypeToken<ArrayList<VentaSimplificada>>() {
         }.getType();
         List<VentaSimplificada> ultimasVentasSimp = gson.fromJson(ultimasVentas, type);
@@ -164,7 +168,7 @@ public class VentaServiceJPA implements VentaService {
                     ultimasVentasSimp.add(new VentaSimplificada(venta));
                 }
                 Collections.sort(ultimasVentasSimp);
-                jedis.set(redisClientKey, gson.toJson(ultimasVentasSimp));
+                cacheService.setCache(redisClientKey, gson.toJson(ultimasVentasSimp));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {
